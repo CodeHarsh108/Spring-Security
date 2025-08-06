@@ -1,12 +1,16 @@
 package com.example.securitydemo.jwt;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -15,6 +19,9 @@ public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     private int jwtExpirationms;
+
+    private String jwtSecret;
+
 
 
     // Getting Jwt from header
@@ -44,14 +51,16 @@ public class JwtUtils {
     // Getting Username from JWT token
     public String getUserNameFromJwtToke(String token){
         return Jwts.parser().
-                verifyWith(key()).
+                verifyWith((SecretKey) key()).
                 build().parseSignedClaims(token).
                 getPayload().getSubject();
     }
 
-
-
-
     // Generating signing key
+    public Key key(){
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    }
+
+
     // Validate JWT token
 }
