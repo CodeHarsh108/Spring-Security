@@ -1,4 +1,5 @@
 package com.example.securitydemo.jwt;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -41,6 +42,16 @@ public class JwtUtils {
 
 
     // Getting Username from JWT token
+    public String getUserNameFromJwtToke(String token){
+        return Jwts.parser().
+                verifyWith(key()).
+                build().parseSignedClaims(token).
+                getPayload().getSubject();
+    }
+
+
+
+
     // Generating signing key
     // Validate JWT token
 }
