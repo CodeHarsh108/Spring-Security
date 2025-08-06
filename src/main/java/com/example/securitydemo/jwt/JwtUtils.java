@@ -1,6 +1,5 @@
 package com.example.securitydemo.jwt;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +17,7 @@ public class JwtUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    private int jwtExpirationms;
+    private int jwtExpirationMs;
 
     private String jwtSecret;
 
@@ -41,7 +40,7 @@ public class JwtUtils {
         return Jwts.builder().
                 subject(username).
                 issuedAt(new Date()).
-                expiration(new Date((new Date().getTime() + jwtExpirationms))).
+                expiration(new Date((new Date().getTime() + jwtExpirationMs))).
                 signWith(key()).
                 compact();
 
@@ -61,6 +60,23 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
-
     // Validate JWT token
+    public boolean validateJwtToken(String authToken){
+        try {
+            System.out.println("Validate");
+            Jwts.parser().verifyWith((SecretKey)key()).build().parseSignedClaims(authToken);
+            return true;
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token : {}", e.getMessage());
+        }catch (ExpiredJwtException e){
+            logger.error("JWT token is expired : {}", e.getMessage());
+        }catch (UnsupportedJwtException e){
+            logger.error("JWT token is unsupported : {}", e.getMessage());
+        }catch (IllegalArgumentException e){
+            logger.error("JWT claims string is empty : {}", e.getMessage());
+        }
+        return false;
+    }
+
+
 }
