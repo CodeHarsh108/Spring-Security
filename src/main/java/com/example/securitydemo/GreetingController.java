@@ -66,9 +66,9 @@ public class GreetingController {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
+        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        LoginResponse response = new LoginResponse(userDetails.getUsername(), jwtToken, roles);
+        LoginResponse response = new LoginResponse(jwtToken, userDetails.getUsername(), roles);
         return ResponseEntity.ok(response);
     }
 }
